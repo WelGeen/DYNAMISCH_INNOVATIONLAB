@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIETERWELSDESIGN 3D CUBE DAILY MOTION GRAPHICS DOODLES</title>
+  <style>
+  * { box-sizing: border-box; }
+
+body { 
+	font-family: Arial; 
+	margin:0px; 
+	background: black;
+	overflow:hidden;
+}
+
+.scene {
+  margin:auto;
+  width: 40vw;
+  height: 40vw;
+  perspective: 40vw;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -20vw;
+  margin-top: -20vw;
+  border: 2px solid darkgray;
+ 
+}
+
+.cube {
+  width: 40vw;
+  height: 40vw;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: translateZ(-20vw);
+  transition: transform 1s;
+}
+
+.cube__face {
+  position: absolute;
+  width: 40vw;
+  height: 40vw;
+  
+  
+}
+
+.cube__face video{
+  width: 100%;
+  height: 100%;
+  border: 1px solid yellow;
+}
+
+.cube__face--front  { transform: rotateY(  0deg) translateZ(20vw); }
+.cube__face--right  { transform: rotateY( 90deg) translateZ(20vw); }
+.cube__face--back   { transform: rotateY(180deg) translateZ(20vw); }
+.cube__face--left   { transform: rotateY(-90deg) translateZ(20vw); }
+.cube__face--top    { transform: rotateX( 90deg) translateZ(20vw); }
+.cube__face--bottom { transform: rotateX(-90deg) translateZ(20vw); }
+
+  </style>
+
+</head>
+	<body >
+
+		<div class="scene" onclick="playVid();" >
+		
+			<div class="cube" >
+				<div class="cube__face cube__face--front"> <video class="videoC" loop><source src="" type="video/mp4"></video> </div>
+				
+				<div class="cube__face cube__face--back"> <video class="videoC" loop><source src="" type="video/mp4"></video> </div>
+				
+				<div class="cube__face cube__face--right"> <video class="videoC" loop><source src="" type="video/mp4"></video> </div>
+				
+				<div class="cube__face cube__face--left"> <video class="videoC" loop><source src="" type="video/mp4"></video>  </div>
+				
+				<div class="cube__face cube__face--top"> <video class="videoC" loop> <source src="" type="video/mp4"></video> </div>
+				
+				<div class="cube__face cube__face--bottom"> <video class="videoC"  loop><source src="" type="video/mp4"></video>  </div>
+				
+			</div>
+
+		</div>
+		
+
+	<!-- partial -->
+	<script>
+	var cube = document.querySelector('.cube');
+
+	var ALLvideo = document.querySelectorAll('.videoC');
+
+	function playVid() {
+		for( i in ALLvideo) {
+			if(Number.isInteger( parseInt(i) )){
+				//console.log("test",i);
+				ALLvideo[i].play();
+			}
+		}
+	}
+
+	function changeSideRandom() {
+		var grX = randomIntFromInterval(-180, 180);
+		var grY = randomIntFromInterval(-180, 180);
+		var grZ = randomIntFromInterval(-180, 180);
+		var w = randomIntFromInterval(-7, 4);
+		var h = randomIntFromInterval(-7, 4);
+		var s = Math.random();
+	  cube.style.transform = "translateX("+w+"vw) translateY("+h+"vw) rotateX("+grX+"deg) rotateY("+grY+"deg) rotateZ("+grZ+"deg) scaleX("+s+") scaleY("+s+") scaleZ("+s+")";
+
+	  myTimeout = null;
+	  myTimeout = setTimeout(changeSideRandom, randomIntFromInterval(5000, 9000));
+	}
+
+	function randomIntFromInterval(min, max) { // min and max included 
+	  return Math.floor(Math.random() * (max - min + 1) + min)
+	}
+
+	function randomTime(start, end) {
+		// get the difference between the 2 dates, multiply it by 0-1, 
+		// and add it to the start date to get a new date 
+		var diff =  end.getTime() - start.getTime();
+		var new_diff = diff * Math.random();
+		var date = new Date(start.getTime() + new_diff);
+		return date;
+	} 
+	const zeroPad = (num, places) => String(num).padStart(places, '0')
+
+	function set_SRC_Video(){
+		
+		for( i in ALLvideo) {
+			//console.log( Number.isInteger( parseInt(i) ) );
+			if(Number.isInteger( parseInt(i) )){
+				
+				var t = new Date( randomTime(new Date("03-13-2022"), new Date("05-22-2022"))  ).toLocaleDateString();
+				var a = t.split("-");
+				t = zeroPad(a[0],2)+"-"+zeroPad(a[1],2)+"-22";
+				ALLvideo[i].src = "https://pieterwels.nl/vids/dailymotiongraphics/"+t+".mp4";
+				
+			}
+		}
+		playVid();
+		var myTimeout2 = null;
+		var myTimeout2 = setTimeout(set_SRC_Video, randomIntFromInterval(8000, 15000));
+	}
+
+	set_SRC_Video();
+
+	var myTimeout = setTimeout(changeSideRandom, randomIntFromInterval(5000, 9000));
+
+
+		
+	
+	</script>
+
+	</body>
+	</html>
