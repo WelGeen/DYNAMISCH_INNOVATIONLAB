@@ -4,7 +4,7 @@ InnovationLab
 Dynamisch Strijp TQ
 Voor TQ ontwikkelden we een eerste concept van een slimme informatie voorziening en een 'intelligent identiteitssysteem' dat 'abstracte vormen' genereert op basis van data over hoe studenten en docenten de ruimtes in TQ gebruiken en ermee omgaan. Ons doel is de Dynamisch Identiteit van InnovationLab te vertalen naar een functioneel en dynamisch open ontwikelplatform.
 
-SHOWCASE SHAPES
+SHAPES<br/>
 https://welgeen.nl/_shapes/uc02.html<br/>
 https://welgeen.nl/_shapes/uc02.html<br/>
 https://welgeen.nl/_shapes/01/<br/>
