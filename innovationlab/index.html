@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html >
+	<head> 
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script src="https://www.gstatic.com/firebasejs/5.4.0/firebase.js"></script>
+		 <style type=text/css>
+			body{
+				background:black;
+			}
+			#screen{	
+				margin: 0 auto;
+				display:block;
+				border:4px solid #2e2e2e;
+			}
+					
+		</style>
+	</head>
+	<body >
+		<!-- 16 : 9 -->	
+		<br>
+		<iframe id="screen" src="p1.html"  frameborder="0" ></iframe> 
+		<script>
+		 // Initialize Firebase
+			var config = {
+				apiKey: "AIzaSyBVzTcyAuEIi3XqHJfJ_Fu543lnqytDK9M",
+				authDomain: "welgeen003.firebaseapp.com",
+				databaseURL: "https://welgeen003.firebaseio.com",
+				projectId: "welgeen003",
+				storageBucket: "welgeen003.appspot.com",
+				messagingSenderId: "1056729225262"
+			};
+			
+			firebase.initializeApp(config);
+			
+			// Every time firebase.database is Changed this will be excecuted!
+			firebase.database().ref('/tq/').on('value', function(snapshot) {
+				var node = (snapshot.val() && snapshot.val().node) || 'Anonymous';
+
+				iframeContent.setBackgroundColor(node["setBackgroundColor"]);
+				iframeContent.setShapeColor(node["setShapeColor"]);
+				iframeContent.setPointCount(node["setPathPointCount"]);
+			});
+			
+			function onWindowResize() {
+				var w = window.innerWidth; //9
+				var h =  window.innerHeight; //16 = 100% > 16/100 = 1% > (16/100)*9 = 9%
+				var newH = h*0.9;
+				document.querySelector('#screen').style.width = newH*(9/16)+"px";
+				document.querySelector('#screen').style.height = newH + 'px';
+			}			
+			onWindowResize();
+			window.addEventListener( 'resize', onWindowResize, false );
+			var iframeContent = document.getElementById('screen').contentWindow;
+		</script>
+	</body> 
+</html>
