@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<style>
+		body{
+			font-family:arial;
+			line-height: 1.5;
+			}
+			#idea_1 {
+				width: 800px;
+				height: 450px;
+				border: solid 1px black;
+				position: relative;
+				overflow:hidden;
+			}
+			.bg {
+
+			  height: 100%;
+			  background-position: center;
+			  background-repeat: no-repeat;
+			  background-size: contain;
+			}
+			#mycanvas{
+				position: absolute;
+				top: 103px;
+				left: 469px;
+			}
+			.wrapper{
+			 width: 800px;
+			 margin:auto;
+			 padding:20px;
+			}
+		</style>
+	</head>
+	
+	
+	<body>
+	<div class='wrapper'>
+		<div id="idea_1" class="bg" style="background-image: url('img/bg02.jpg');">
+			<canvas id="mycanvas"></canvas>
+		</div>
+		<p>
+			<h3>Dynamisch Strijp TQ</h3>
+	Voor TQ ontwikkelden we een eerste concept van een slimme informatie voorziening en een 'intelligent identiteitssysteem' dat 'abstracte vormen' genereert op basis van data over hoe studenten en docenten de ruimtes in TQ gebruiken en ermee omgaan. Ons doel is de Dynamisch Identiteit van InnovationLab te vertalen naar een functioneel en dynamisch open ontwikelplatform.
+			</p>
+	</div>
+		<script>
+		var w = 400, h = 300;
+		var v = Math.min(w, h), mesh = [];
+		var cvs, ctx, img, data, t, r, a, x, y;
+		canvas = document.querySelector("#mycanvas");
+		canvas.width = w; 
+		canvas.height = h;
+		ctx = canvas.getContext("2d");
+
+		ctx.fillStyle = "#000000";
+		ctx.font = "30px Arial";
+		ctx.textAlign = "center";
+		ctx.textBaseline = "middle";
+		
+		function initMesh() {
+		  ctx.fillText("GAMEDESIGN S4", w/2, h/2, w);
+		  img = ctx.getImageData(0, 0, w, h);
+		  data = img.data;
+		  
+		for(y = 0; y < h; y++){
+			for(x = 0; x < w; x++){
+				if(data[4*(y*w+x)+3] > 16){
+					if(data[4*(y*w+x-1)+3] < 16 || // left
+					   data[4*(y*w+x+1)+3] < 16 || // right
+					   data[4*((y-1)*w+x)+3] < 16 || // top
+					   data[4*((y+1)*w+x)+3] < 16) // bottom
+					  mesh.push({x:x, y:y});
+					 }
+				}
+			}
+		}
+
+		function drawMesh() {
+		  ctx.clearRect(0, 10, w, h);
+		  t = Date.now() / 2000;
+		  
+		  mesh.forEach(function(p) {
+			a = (Math.cos(p.x) + Math.cos(p.y) + t)*Math.PI;
+			r = 60*Math.pow(Math.sin(2*t - p.x/w), 9);
+			x = p.x + r * Math.cos(a);
+			y = p.y + r * Math.sin(a);
+			ctx.fillRect(x, y, 1, 1);
+		  });
+		  
+		  requestAnimationFrame(drawMesh);
+		}
+		initMesh();
+		drawMesh();
+		
+		
+		</script>
+	</body>
+</html>

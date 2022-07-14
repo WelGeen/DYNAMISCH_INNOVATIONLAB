@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<style>
+			body{
+			font-family:arial;
+			line-height: 1.5;
+			}
+			#idea_1 {
+				width: 800px;
+				height: 450px;
+				
+				position: relative;
+				overflow:hidden;
+			}
+			.bg {
+
+			  height: 100%;
+			  background-position: center;
+			  background-repeat: no-repeat;
+			  background-size: contain;
+			}
+			#div1 {
+			         position: relative;
+    top: -47px;
+    left: 66px;
+    margin: auto;
+    height: 174px;
+    width: 186px;
+    padding: 79px;
+    perspective: 40px;
+	}
+
+			#div2 {
+				        transform: rotateX(336deg) rotateY(4deg) rotateZ(355deg);
+    transform-style: preserve-3d;
+  
+			}
+			
+			#frame{
+			    width: 100%;
+    height: 32px;
+    border: none;
+    }
+			
+			.wrapper{
+			 width: 800px;
+			 margin:auto;
+			 padding:20px;
+			}
+		</style>
+	</head>
+	
+	
+	<body>
+		<div class='wrapper'>
+		
+			<div id="idea_1" class="bg" style="background-image: url('img/bg05.jpg');">
+				<div id="div1">
+				  <div id="div2">
+					<iframe id="frame" src="https://welgeen.nl/_shapes/index.html" frameBorder="0" scrolling="no"  allowtransparency="true" ></iframe>
+				  </div>
+				</div>
+  				
+			</div>
+			<button onclick="refreshIframe('frame')">get new data</button>
+			<p>
+				<h3>Dynamisch Strijp TQ</h3>
+		Voor TQ ontwikkelden we een concept van een 'Dynamisch identiteitssysteem' dat 'illustraties' genereert op basis van data over hoe studenten en docenten de ruimtes in TQ gebruiken en ermee omgaan. Ons doel is de Dynamisch Identiteit van InnovationLab te vertalen naar een functioneel en dynamisch open ontwikkelplatform.
+			</p>
+		</div>
+		<script>
+		function refreshIframe(id) {
+			document.getElementById(id).src = "https://welgeen.nl/_shapes/index.html";
+		}
+		function getRandomInt(min, max) {
+			min = Math.ceil(min);
+			max = Math.floor(max);
+			return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+		}
+		</script>
+	</body>
+</html>

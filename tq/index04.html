@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<style>
+			body{
+			font-family:arial;
+			line-height: 1.5;
+			}
+			#idea_1 {
+				width: 800px;
+				height: 450px;
+				
+				position: relative;
+				overflow:hidden;
+			}
+			.bg {
+
+			  height: 100%;
+			  background-position: center;
+			  background-repeat: no-repeat;
+			  background-size: contain;
+			}
+			#div1 {
+			  position: relative;
+			  top: 250px;
+			  margin: auto;
+			  height: 300px;
+			  width: 150px;
+			  padding: 10px;
+			 
+			  perspective: 434px;
+			}
+
+			#div2 {
+				transform: rotateX(345deg) rotateY(49deg) rotateZ(354deg);
+				transform-style: preserve-3d;
+			}
+			#div3 {
+			      position: relative;
+				top: -78px;
+				left: 133px;
+				margin: auto;
+				height: 327px;
+				width: 93px;
+				padding: 10px;
+				perspective: 434px;
+			}
+
+			#div4 {
+				transform: rotateX(345deg) rotateY(56deg) rotateZ(354deg);
+				transform-style: preserve-3d;
+			}
+			#frame{
+				width: 100%;
+				height: 188px;
+				border: solid 4px black;
+				-webkit-box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0); 
+				box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0);
+			}
+			#frame2{
+				width: 100%;
+				height: 127px;
+				border: solid 3px black;
+				-webkit-box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0);
+				box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0);
+			}
+			.wrapper{
+			 width: 800px;
+			 margin:auto;
+			 padding:20px;
+			}
+		</style>
+	</head>
+	
+	
+	<body>
+		<div class='wrapper'>
+		
+			<div id="idea_1" class="bg" style="background-image: url('img/bg03.jpg');">
+				<div id="div1">
+				  <div id="div2">
+					<iframe id="frame"  src="https://welgeen.nl/demo/experiment-no-007/" scrolling="no"  allowtransparency="true" ></iframe>
+				  </div>
+				</div>
+
+				<div id="div3">
+				  <div id="div4">
+					<iframe id="frame2"  src="https://welgeen.nl/demo/experiment-no-001/" scrolling="no"  allowtransparency="true" ></iframe>
+				  </div>
+				</div>  				
+			</div>
+			<button onclick="refreshIframe('frame')">new data screen left</button>
+			<button onclick="refreshIframe('frame2')">new data screen right</button>
+			<p>
+				<h3>Dynamisch Strijp TQ</h3>
+		Voor TQ ontwikkelden we een concept van een 'Dynamisch identiteitssysteem' dat 'illustraties' genereert op basis van data over hoe studenten en docenten de ruimtes in TQ gebruiken en ermee omgaan. Ons doel is de Dynamisch Identiteit van InnovationLab te vertalen naar een functioneel en dynamisch open ontwikkelplatform.
+			</p>
+		</div>
+		<script>
+		function refreshIframe(id) {
+			document.getElementById(id).src = "https://welgeen.nl/demo/experiment-no-00"+getRandomInt(1, 7)+"/";
+		}
+		function getRandomInt(min, max) {
+			min = Math.ceil(min);
+			max = Math.floor(max);
+			return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+		}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" >
+	<head>
+		<meta charset="UTF-8">
+		<title>game</title>
+		<style>
+			html, body {
+			  height: 100%;
+			}
+			body{
+				font-family:Verdana;
+				background: black;
+				color: white;
+				height: 100%;
+				width:100%;
+				overflow: hidden;
+				cursor: cell;
+			}
+			.item{
+				position:absolute;
+				top: 0px;
+				left:0px;
+				transform:"";
+				width: -moz-fit-content;
+				width: fit-content;
+				background-color: white;
+				font-size: 40px;
+				color:black;
+				padding: 5px;
+			}
+		</style>
+	</head>
+	
+	<body>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
+
+		<script>
+
+			let allITEMS = [];
+			const engine = Matter.Engine.create(); 
+
+			engine.world.gravity.y = 0.3;
+			const Rect_top = Matter.Bodies.rectangle(window.innerWidth/2, 5, window.innerWidth, 10, {isStatic: true});
+			const Rect_left = Matter.Bodies.rectangle(5, window.innerHeight/2, 10, window.innerHeight, {isStatic: true});
+			const Rect_bottom = Matter.Bodies.rectangle(window.innerWidth/2, window.innerHeight-5, window.innerWidth, 10, {isStatic: true});
+			const Rect_right = Matter.Bodies.rectangle(window.innerWidth-5, window.innerHeight/2, 10, window.innerHeight, {isStatic: true});
+			
+			Matter.Composite.add(engine.world, [Rect_top, Rect_left,Rect_bottom, Rect_right]);
+			
+			(function rerender() {
+				//box.render();
+				for(x=0; x<allITEMS.length; x++){
+					allITEMS[x].render();
+				}
+				Matter.Engine.update(engine);
+				requestAnimationFrame(rerender);
+			})();
+			
+			
+			const bodyopt = { 
+				restitution: 0,
+				friction: 2, 
+				frictionAir: 0, 
+				frictionStatic: 2,
+				angle: 0, 
+				isStatic: false
+			};
+			function addItem() {
+				let div = document.createElement("div");
+				div.innerHTML = "W";
+				div.className = "item";
+				var x = window.innerWidth/2;
+				var y = window.innerHeight/2;
+				div.style.top =  x + "px";
+				div.style.left = y + "px";
+				document.body.appendChild(div);
+				
+				var ITEM = {
+				  body: Matter.Bodies.rectangle(x, y, div.clientWidth, div.clientHeight),
+				  elem: div,
+				  render() {
+					const {x, y} = this.body.position;
+					this.elem.style.top = `${y}px`;
+					this.elem.style.left = `${x}px`;
+					this.elem.style.transform = `rotate(${this.body.angle}rad)`;
+				  }
+				};
+				Matter.Composite.add(engine.world, [ITEM.body], bodyopt);
+				allITEMS.push(ITEM);
+			} 
+			
+			addItem();
+			
+			let gyroscope = new Gyroscope({frequency: 60});
+
+			gyroscope.addEventListener('reading', e => {
+			  console.log("Angular velocity along the X-axis " + gyroscope.x);
+			  console.log("Angular velocity along the Y-axis " + gyroscope.y);
+			  console.log("Angular velocity along the Z-axis " + gyroscope.z);
+			  engine.world.gravity.y = gyroscope.y;
+			  engine.world.gravity.x = gyroscope.x;
+			});
+			
+			gyroscope.start();
+		</script>
+	
+	</body>
+	
+</html>
