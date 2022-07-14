@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" >
+	<head>
+		<meta charset="UTF-8">
+		<title>BOT</title>
+		<style>
+		html, body {
+		  height: 100%;
+		}
+		body{
+			font-family:'Times New Roman', serif;
+			background: white;
+			color: white;
+			height: 100%;
+			width:100%;
+			overflow: hidden;
+			cursor: cell;
+		}
+		.response{
+			position:absolute;
+			top: 0px;
+			left:0px;
+			transform:"";
+			width: -moz-fit-content;
+			width: fit-content;
+			background-color: transparent;
+			color:black;
+			font-size:10px;
+			padding: 2px;
+		}
+
+		</style>
+	</head>
+	
+	<body id="body">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
+
+		<script >
+
+			// Random for any other user input
+			const bodyopt = { restitution: 0,
+			  friction: 2, frictionAir: 0, frictionStatic: 2,
+			  angle: 0, isStatic: false };
+			  
+			function setITEM(div, xx, yy){
+				//console.log(xx, yy, div.clientWidth, div.clientHeight)
+					if(!div.clientHeight==0){
+					var ITEM = {
+					  body: Matter.Bodies.rectangle(xx, yy, div.clientWidth, div.clientHeight),
+					  elem: div,
+					  render() {
+						const {x, y} = this.body.position;
+						this.elem.style.top = `${y}px`;
+						this.elem.style.left = `${x}px`;
+						this.elem.style.transform = `rotate(${this.body.angle}rad)`;
+						
+					  }
+					};
+					Matter.Composite.add(engine.world, [ITEM.body], bodyopt);
+					allITEMS.push(ITEM);
+				}
+			}
+			
+			const text = [
+			'let allITEMS = [];',
+			'const engine = Matter.Engine.create();',
+			'//engine.world.gravity.x = 355;',
+			'engine.world.gravity.y = 0.1;',
+			' ',
+			'const ground = Matter.Bodies.rectangle(window.innerWidth/2, window.innerHeight, window.innerWidth, 10, {isStatic: true});',
+			'const left = Matter.Bodies.rectangle(-5, 0, 5, window.innerHeight, {isStatic: true});',
+			'//Matter.Composite.add(engine.world, [box.body, ground]);',
+			'const right = Matter.Bodies.rectangle(window.innerWidth, 0, 5, window.innerHeight, {isStatic: true});',
+			'Matter.Composite.add(engine.world, [ground,left, right]);',
+			' ',
+			'(function rerender() {',
+			'	//box.render();',
+			'	for(x=0; x<allITEMS.length; x++){',
+			'		allITEMS[x].render(); ',
+			'	}',
+			'   ',
+			'	Matter.Engine.update(engine);',
+			'	requestAnimationFrame(rerender);',
+			'})();'
+			];
+			
+			let mouseX = 1;
+			let mouseY = 1;
+			let h = 0;
+			let count = 0;
+			let BIZZY = false;
+			let go = 0;
+			let intt = setInterval(() => {
+				if(count<text.length && BIZZY == false){
+					line = text[count];
+					addChatEntry(line)
+					count++;
+				}else{go =1;Matter.Composite.remove(engine.world, [left, right]);}
+			}, 200);
+			
+			let allITEMS = [];
+			const engine = Matter.Engine.create(); 
+			//engine.world.gravity.x = 355;
+			engine.world.gravity.y = 0.5;
+			
+			const ground = Matter.Bodies.rectangle(window.innerWidth/2, window.innerHeight, window.innerWidth, 10, {isStatic: true});
+			const left = Matter.Bodies.rectangle(-5, 0, 5, window.innerHeight, {isStatic: true});
+			//Matter.Composite.add(engine.world, [box.body, ground]);
+			const right = Matter.Bodies.rectangle(window.innerWidth, 0, 5, window.innerHeight, {isStatic: true});
+			Matter.Composite.add(engine.world, [ground,left, right]);
+			
+			(function rerender() {
+				//box.render();
+				if(go ==1){
+					for(x=0; x<allITEMS.length; x++){
+						allITEMS[x].render(); 
+					}
+				  
+					Matter.Engine.update(engine);
+				}
+				requestAnimationFrame(rerender);
+			})();
+		
+		
+		
+			function addChatEntry(line) {
+				BIZZY = true;
+				let myArray = line.split('');
+				let w = 0;
+				let divH = 0;
+				// STEP 1
+				for(let x=0; x<myArray.length; x++){
+					let div = document.createElement("div");
+					div.innerHTML = myArray[x];
+					div.className = "response";
+					div.style.backgroundColor = getRandomRgb();
+					div.style.color = "white"; //getRandomRgb();
+					
+					div.style.left = mouseX + w + "px";
+					div.style.top = mouseY + h + "px";
+					//div.style.fontSize = "8px"
+					document.body.appendChild(div);
+					setITEM(div, (mouseX+w), (mouseY + h));
+					w = w + div.clientWidth;
+					divH = div.clientHeight
+				}
+				BIZZY = false;
+				
+				h = h + divH;
+			}
+			setTimeout(() => {
+				Matter.Composite.remove(engine.world, [ground]);
+				engine.world.gravity.y = 0.3;
+			}, 7000);
+			
+			function getRandomRgb() {
+			  var num = Math.round(0xffffff * Math.random());
+			  var r = num >> 16;
+			  var g = num >> 8 & 255;
+			  var b = num & 255;
+			  return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+			}
+
+			document.querySelector("#body").style.backgroundColor = getRandomRgb();
+		</script>
+	
+	</body>
+	
+</html>

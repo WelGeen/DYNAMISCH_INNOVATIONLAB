@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" >
+	<head>
+		<meta charset="UTF-8">
+		<title>BOT</title>
+		<style>
+		html, body {
+		  height: 100%;
+		}
+		body{
+			font-family:'Times New Roman', serif;
+			background: white;
+			color: white;
+			height: 100%;
+			width:100%;
+			overflow: hidden;
+			cursor: cell;
+		}
+		.response{
+			position:absolute;
+			top: 0px;
+			left:0px;
+			transform:"";
+			width: -moz-fit-content;
+			width: fit-content;
+			background-color: white;
+			color:black;
+			padding: 5px;
+		}
+		.typing{
+			background: yellow;
+			color:black;
+		}
+		#box {
+		  position: absolute;
+		  background: white;
+		  height: 40px;
+		  width: 40px;
+		  cursor: move;
+		}
+
+		#ground {
+		  position: absolute;
+		  background: #666;
+		  top: 140px;
+		  height: 100px;
+		  width: 400px;
+		}
+		</style>
+	</head>
+	
+	<body>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
+		
+		<script  src="script.js"></script>
+		
+		<script >
+			function rd(min, max) { // min and max included 
+			  return Math.floor(Math.random() * (max - min + 1) + min)
+			}
+			const Firstutterances = [
+				["how are you", "how is life", "how are things"],
+				["hi", "hey", "hello", "good morning", "good afternoon"],
+				["what are you doing", "what is going on", "what is up"],
+				["how old are you"],
+				["who are you", "are you human", "are you bot", "are you human or bot"],
+				["who created you", "who made you"],
+				["your name please","your name", "may i know your name", "what is your name", "what call yourself"]
+			];
+			// input options
+			const utterances = [
+				["how are you", "how is life", "how are things"],
+				["hi", "hey", "hello", "good morning", "good afternoon"],
+				["what are you doing", "what is going on", "what is up"],
+				["how old are you"],
+				["who are you", "are you human", "are you bot", "are you human or bot"],
+				["who created you", "who made you"],
+				["your name please","your name", "may i know your name", "what is your name", "what call yourself"],
+				["happy", "good", "fun", "wonderful", "fantastic", "cool"],
+				["bad", "bored", "tired"],
+				["help me", "tell me story", "tell me joke"],
+				["ah", "yes", "ok", "okay", "nice"],
+				["bye", "good bye", "goodbye", "see you later"],
+				["what should i eat today"],
+				["what", "why", "how", "where", "when"],
+				["no", "not sure", "maybe", "no thanks"],
+				[""],
+				["haha", "ha", "lol", "hehe", "funny", "joke"]
+			];
+
+			// Possible responses corresponding to triggers
+
+			const answers = [
+			   [
+				"Fine... how are you?",
+				"Pretty well, how are you?",
+				"Fantastic, how are you?"
+			  ],
+			  [
+				"Hello!", "Hi!", "Hey!", "Hi there!", "Howdy"
+			  ],
+			  [
+				"Nothing much",
+				"About to go to sleep",
+				"Can you guess?",
+				"I don't know actually"
+			  ],
+			  ["I am infinite"],
+			  ["I am just a bot", "I am a bot. What are you?"],
+			  ["The one true God, JavaScript"],
+			  ["I am nameless", "I don't have a name"],
+			  ["Have you ever felt bad?", "Glad to hear it"],
+			  ["Why?", "Why? You shouldn't!"],
+			  ["What about?", "Once upon a time..."],
+			  ["Tell me a story", "Tell me a joke", "Tell me about yourself"],
+			  ["Bye", "Goodbye", "See you later"],
+			  ["Pasta", "Burger"],
+			  ["Great question"],
+			  ["That's ok", "What do you want to talk about?"],
+			  ["Please say something :("],
+			  ["Haha!", "Good one!"]
+			];
+
+			// Random for any other user input
+
+			const alternatives = [
+			  "Go on...",
+			  "Try again",
+			];
+			
+			let mouseX = 0;
+			let mouseY = 0;
+			let firstClick = 0;
+		
+			
+	setInterval(() => {
+			if(BIZZY == false){
+				mouseX = rd(1, 40);
+				mouseY = rd(1, 30);
+				if(firstClick<2){
+					var list = getRandomItem(Firstutterances);
+				}else{
+					var list = getRandomItem(utterances);
+				}
+				var txt = getRandomItem(list);
+				output(txt);
+			}
+		}, 1000);
+			
+		let allITEMS = [];
+		const engine = Matter.Engine.create(); 
+		//engine.world.gravity.x = 355;
+		engine.world.gravity.y = 0.1;
+		
+		const ground = Matter.Bodies.rectangle(window.innerWidth/2, window.innerHeight, window.innerWidth, 10, {isStatic: true});
+		const left = Matter.Bodies.rectangle(-5, 0, 5, window.innerHeight, {isStatic: true});
+		//Matter.Composite.add(engine.world, [box.body, ground]);
+		const right = Matter.Bodies.rectangle(window.innerWidth, 0, 5, window.innerHeight, {isStatic: true});
+		Matter.Composite.add(engine.world, [ground,left, right]);
+		
+		(function rerender() {
+			//box.render();
+			for(x=0; x<allITEMS.length; x++){
+				allITEMS[x].render(); 
+			}
+		  
+			Matter.Engine.update(engine);
+			requestAnimationFrame(rerender);
+		})();
+		
+		
+		
+		function addChatEntry(input, product) {
+			// STEP 1
+			BIZZY = true;
+			let myArray = input.split(" ");
+			let w = 0;
+			let h = 0;
+			for(let x=0; x<myArray.length; x++){
+				let div = document.createElement("div");
+				div.innerHTML = myArray[x];
+				div.className = "response";
+				div.style.backgroundColor = "black"; //getRandomRgb();
+				div.style.color = "white"; //getRandomRgb();
+				div.style.top = mouseY + "px";
+				div.style.left = mouseX + w + "px";
+				div.style.fontSize = rd(2, 30) + "px";
+				//div.style.fontFamily = randomFont();
+				
+				document.body.appendChild(div);
+				setITEM(div, (mouseX+w), mouseY);
+				w = w + div.clientWidth;
+				h = div.clientHeight;  
+				
+			}
+			// STEP 2 
+			let divTyping = document.createElement("div");
+			divTyping.innerHTML = "Typing...";
+			divTyping.className = "response typing";
+			divTyping.style.top = mouseY + h + "px";
+			divTyping.style.left = mouseX + "px";
+			document.body.appendChild(divTyping);
+
+			
+			setTimeout(() => {
+				divTyping.remove();
+				// STEP 3
+				myArray = product.split(" ");
+				w = 0;
+				for(let x=0; x<myArray.length; x++){
+					let div = document.createElement("div");
+					div.innerHTML = myArray[x];
+					div.className = "response";
+					div.style.backgroundColor = "white"; //getRandomRgb();
+					div.style.color = "black"; //getRandomRgb();
+					div.style.top = mouseY + h + "px";
+					div.style.left = mouseX + w + "px";
+					div.style.fontSize = rd(2, 20) + "px"
+					document.body.appendChild(div);
+					setITEM(div, (mouseX+w), (mouseY + h));
+					w = w + div.clientWidth;
+					
+				}
+				BIZZY = false;
+			}, 1000);
+
+		}
+			// Modify here --------------------------------------------------------
+		var fonts = [
+			'A-OTF Shin Maru Go Pro M',
+			'EPSON 行書体Ｍ',
+			'EPSON 正楷書体Ｍ',
+			'EPSON 教科書体Ｍ',
+			'EPSON 太明朝体Ｂ',
+			'EPSON 太行書体Ｂ',
+			'EPSON 太角ゴシック体B Regular',
+			'EPSON 太丸ゴシック体B Regular',
+			'EPSON 丸ゴシック体Ｍ',
+			'KanjiStrokeOrders',
+			'Meiryo',
+			'nagayama_kai',
+			'Kozuka Gothic Pr6N',
+			'Kozuka Gothic Pro',
+			'Kozuka MIncho Pr6N',
+			'Kozuka Mincho Pro',
+			'MS Gothic Regular',
+			'MS Mincho Regular',
+			'MS PGothic Regular',
+			'MS PMincho Regular',
+			'MS UI Gothic Regular',
+			'Yu Gothic',
+			'Yu Gothic UI',
+			'Yu Mincho',
+		];
+		var randomFont = function() {
+			var chosen = fonts[Math.floor(Math.random() * fonts.length)];
+			return chosen
+		};
+		</script>
+	
+	</body>
+	
+</html>

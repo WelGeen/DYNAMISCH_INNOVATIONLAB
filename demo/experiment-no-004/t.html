@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>logo</title>
+		<meta charset="utf-8">
+		<style>
+		body{
+			margin:0px;
+		}
+		#portrait{
+			margin: 0px auto;
+			width: 1080px;
+			height: 1920px;
+			background-color:#FF0000;
+			margin-top:5px;
+		}
+		</style>
+	</head>
+	
+	<body>
+		<div id="portrait">
+			
+		</div>
+		<script>
+		function onWindowResize() {
+			if(window.innerHeight<window.innerWidth){
+				var ratio = (window.innerHeight-10)/1920;
+			}else{
+				var ratio = window.innerWidth/1080;
+			}
+			console.log(ratio);
+			var w = 1080*ratio;
+			var h = 1920*ratio;
+			document.querySelector('#portrait').style.width = w +'px';
+			document.querySelector('#portrait').style.height = h +'px';
+		}
+		onWindowResize();
+		window.addEventListener( 'resize', onWindowResize, false );
+		</script>
+	</body>
+<html>

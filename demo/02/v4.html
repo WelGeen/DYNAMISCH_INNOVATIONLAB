@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - additive animation - skinning</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="main.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
+	</head>
+	<body>
+		<div id="container"></div>
+		
+
+		<script >
+		var gl_TIME = 0;
+		</script>
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "https://unpkg.com/three@0.126.1/build/three.module.js"
+				}
+			}
+		</script>
+
+		<script type="module">
+
+			import * as THREE from 'three';
+
+			import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
+
+
+			let scene, renderer, camera, stats;
+		
+
+			init();
+
+			function init() {
+
+				const container = document.getElementById( 'container' );
+				
+
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0xa0a0a0 );
+				scene.fog = new THREE.Fog( 0xa0a0a0, 10, 50 );
+
+				const hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
+				hemiLight.position.set( 0, 20, 0 );
+				scene.add( hemiLight );
+
+				const dirLight = new THREE.DirectionalLight( 0xffffff );
+				dirLight.position.set( 3, 10, 10 );
+				dirLight.castShadow = true;
+				dirLight.shadow.camera.top = 2;
+				dirLight.shadow.camera.bottom = - 2;
+				dirLight.shadow.camera.left = - 2;
+				dirLight.shadow.camera.right = 2;
+				dirLight.shadow.camera.near = 0.1;
+				dirLight.shadow.camera.far = 40;
+				scene.add( dirLight );
+
+				// ground
+
+				const mesh = new THREE.Mesh( new THREE.PlaneGeometry( 100, 100 ), new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
+				mesh.rotation.x = - Math.PI / 2;
+				mesh.receiveShadow = true;
+				scene.add( mesh );
+
+
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.outputEncoding = THREE.sRGBEncoding;
+				renderer.shadowMap.enabled = true;
+				container.appendChild( renderer.domElement );
+
+				// camera
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 100 );
+				camera.position.set( 1, -2, 6 );
+
+				const controls = new OrbitControls( camera, renderer.domElement );
+				//controls.enablePan = false;
+				//controls.enableZoom = false;
+				controls.target.set( 0, 1, 0 );
+				controls.update();
+
+
+				for(var x=0; x<10; x++){
+					var geometry = new THREE.SphereGeometry( 0.5, 64, 64 );
+					var sphere = new THREE.Mesh(geometry);
+					sphere.material = new THREE.MeshPhongMaterial( { color: rdc() } );
+					sphere.castShadow = true;
+					sphere.receiveShadow = true;
+					sphere.position.y =  1;
+					sphere.rotation.y =  THREE.MathUtils.degToRad(rd(0, 360));
+					sphere.rotation.x =  THREE.MathUtils.degToRad(rd(0, 360));
+					sphere.rotation.z =  THREE.MathUtils.degToRad(rd(0, 360));
+					//console.log(rdf(0.01, 1))
+					sphere.begin = { x: rdf(0.03, 0.2), y: rdf(0.03, 0.3), z: rdf(0.03, 0.3), 
+							rx: THREE.MathUtils.degToRad(rd(0, 360)),
+							ry: THREE.MathUtils.degToRad(rd(0, 360)),
+							rz: THREE.MathUtils.degToRad(rd(0, 360))
+						}
+					sphere.scale.set(sphere.begin.x, sphere.begin.y, sphere.begin.z );
+					scene.add(sphere);
+			
+					setAnimation(sphere);
+				}
+
+				window.addEventListener( 'resize', onWindowResize );
+				
+				
+				animate();
+
+			}
+			function rd(min, max) { // min and max included 
+			  return Math.floor(Math.random() * (max - min + 1) + min)
+			}
+			function rdf(min, max) { // min and max included 
+			  return Math.random() * (max - min + 1) + min
+			}
+			function rdc() { // min and max included 
+			  return ("#" +Math.floor(Math.random()*16777215).toString(16));
+			}
+			
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+			
+			function animate(time) {
+				// Render loop
+				requestAnimationFrame( animate );
+				TWEEN.update(time);
+				gl_TIME = time;
+				//console.log(gl_TIME);
+				renderer.render( scene, camera );
+			}
+			
+			function setAnimation(el){
+			
+				if(el.animate==false || el.animate == undefined ){
+					
+					el.sX = el.scale.x;
+					el.sY = el.scale.y;
+					el.sZ = el.scale.z;
+					el.rX = el.rotation.x;
+					el.rY = el.rotation.y;
+					el.rZ = el.rotation.z;
+					
+					var current = { x: el.sX, y: el.sY, z: el.sZ, rx: el.rX, ry: el.rY, rz: el.rZ, elem: el}; 
+					if (gl_TIME<1000){
+						var target = { x: rdf(0.01, 3), y: rdf(0.03, 3), z: rdf(0.03, 3), 
+							rx: THREE.MathUtils.degToRad(rd(0, 360)),
+							ry: THREE.MathUtils.degToRad(rd(0, 360)),
+							rz: THREE.MathUtils.degToRad(rd(0, 360))
+						}
+					}else{
+						var target = el.begin;
+					}
+					
+					var tween = new TWEEN.Tween(current)
+					.to( target, rd(1000, 30000))
+					.easing(TWEEN.Easing.Elastic.InOut) //https://www.createjs.com/docs/tweenjs/classes/Ease.html
+					.onUpdate(function() {
+						this.elem.scale.x = this.x;
+						this.elem.scale.y = this.y;
+						this.elem.scale.z = this.z;
+						this.elem.rotation.x = this.rx;
+						this.elem.rotation.y = this.ry;
+						this.elem.rotation.z = this.rz;
+					})
+					.onComplete(function() {
+						this.elem.animate = false;
+						setAnimation(this.elem)
+					}).start();
+				
+					el.animate=true;
+				}
+			}
+		</script>
+
+	</body>
+</html>

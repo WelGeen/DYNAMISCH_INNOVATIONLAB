@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - additive animation - skinning</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="main.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
+	</head>
+	<body>
+		<div id="container"></div>
+		
+
+		<script >
+		var gl_TIME = 0;
+		</script>
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "https://unpkg.com/three@0.126.1/build/three.module.js"
+				}
+			}
+		</script>
+
+		<script type="module">
+
+			import * as THREE from 'three';
+
+			import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
+
+
+			let scene, renderer, camera, stats;
+			let listOFitems = [];
+			let listOFitems1 = [];
+
+			init();
+			
+			function init() {
+
+				const container = document.getElementById( 'container' );
+				
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0xffffff );
+
+				const hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
+				hemiLight.position.set( 0, 20, 0 );
+				scene.add( hemiLight );
+
+				const dirLight = new THREE.DirectionalLight( 0xffffff );
+				dirLight.position.set( 3, 10, 10 );
+				scene.add( dirLight );
+
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.outputEncoding = THREE.sRGBEncoding;
+				renderer.shadowMap.enabled = true;
+				container.appendChild( renderer.domElement );
+
+				// camera
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 100 );
+				camera.position.set( 1, -2, 9 );
+
+				const controls = new OrbitControls( camera, renderer.domElement );
+
+				controls.target.set( 0, 1, 0 );
+				controls.update();
+
+				
+				let imgs = ["images/pat/111297-poi-signals.png","images/pat/1195422531292378906valessiobrito_Japan_Woman_Black_and_White.svg.hi.png","images/pat/Black-.png","images/pat/bg-top-01.png","images/pat/black-white-angel-fantasy-free-devil-tattoo.png","images/pat/butterfly-black-line.png","images/pat/featured-image-500-black-white.png","images/pat/pi58yGbbT.png","images/pat/vlinder5.png","images/pat/vlinder5.png"];
+				
+				for(var x=0; x<10; x++){
+				
+					var geometry = new THREE.SphereGeometry( 0.5, 128, 128 );
+					var sphere = new THREE.Mesh(geometry);
+					//var tx = "https://welgeen.nl/beeldbank/" + imgs[x];
+					//const texture = new THREE.TextureLoader().load( tx );
+					//sphere.material = new THREE.MeshBasicMaterial( { map: texture } );
+					
+					sphere.material = new THREE.MeshPhongMaterial( { color: rdc() } );
+					sphere.position.y =  1;
+					sphere.rotation.y =  THREE.MathUtils.degToRad(rd(0, 360));
+					sphere.rotation.x =  THREE.MathUtils.degToRad(rd(0, 360));
+					sphere.rotation.z =  THREE.MathUtils.degToRad(rd(0, 360));
+					//console.log(rdf(0.01, 1))
+					sphere.begin = { x: rdf(0.01, 2), y: rdf(0.01, 2), z: rdf(0.01, 2), 
+							rx: THREE.MathUtils.degToRad(rd(0, 360)),
+							ry: THREE.MathUtils.degToRad(rd(0, 360)),
+							rz: THREE.MathUtils.degToRad(rd(0, 360))
+						}
+					sphere.end = { x: 0, y: 0, z: 0, 
+						rx: THREE.MathUtils.degToRad(rd(0, 360)),
+						ry: THREE.MathUtils.degToRad(rd(0, 360)),
+						rz: THREE.MathUtils.degToRad(rd(0, 360))
+					}
+					sphere.scale.set(sphere.begin.x, sphere.begin.y, sphere.begin.z );
+					
+					listOFitems.push(sphere);
+					listOFitems1.push(sphere);
+					
+
+				}
+
+				window.addEventListener( 'resize', onWindowResize );
+
+				firstDraw();
+				animate();
+
+			}
+			
+			
+			function firstDraw() {
+				let obj = listOFitems[0];
+				obj.scale.set(0, 0, 0 );
+				scene.add(obj);
+				setAnimation2(obj);
+			}
+			
+			
+			function test() {
+			
+				clearTimeout(myTimeout);
+				//console.log(listOFitems.length)
+				if(listOFitems.length>0){
+					let obj = listOFitems[listOFitems.length-1];
+					
+					scene.add(obj);
+					setAnimation(obj);
+					listOFitems.pop();
+					myTimeout = setTimeout(test, 200);
+				}else{
+					for(var x=0; x<listOFitems1.length; x++){
+						let obj = listOFitems1[x];
+						setAnimation(obj);
+					}
+					
+				 }
+			}
+			
+			function rd(min, max) { // min and max included 
+			  return Math.floor(Math.random() * (max - min + 1) + min)
+			}
+			function rdf(min, max) { // min and max included 
+			  return Math.random() * (max - min + 1) + min
+			}
+			function rdc() { // min and max included 
+			  return ("#" +Math.floor(Math.random()*16777215).toString(16));
+			}
+			
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+			
+			function animate(time) {
+				// Render loop
+				requestAnimationFrame( animate );
+				
+				TWEEN.update(time);
+				
+				gl_TIME = time;
+				
+				
+				renderer.render( scene, camera );
+			}
+			
+			var klaar = false;
+			
+			let myTimeout;
+			function callback2(){
+				myTimeout = setTimeout(test, 10);
+			 }
+			function setAnimation(el){
+			
+				if(el.animate==false || el.animate == undefined ){
+					
+					el.sX = el.scale.x;
+					el.sY = el.scale.y;
+					el.sZ = el.scale.z;
+					el.rX = el.rotation.x;
+					el.rY = el.rotation.y;
+					el.rZ = el.rotation.z;
+					//el.cb = cb;
+					var current = { x: el.sX, y: el.sY, z: el.sZ, rx: el.rX, ry: el.rY, rz: el.rZ, elem: el}; 
+					if (gl_TIME<10000){
+						var target = { x: rdf(0.01, 3), y: rdf(0.01, 3), z: rdf(0.01, 3), 
+							rx: THREE.MathUtils.degToRad(rd(0, 360)),
+							ry: THREE.MathUtils.degToRad(rd(0, 360)),
+							rz: THREE.MathUtils.degToRad(rd(0, 360))
+						};
+						//console.log(target);
+					}else{
+						var target = el.end; //sphere.end
+						klaar  = true;
+					}
+					
+					var tween = new TWEEN.Tween(current)
+					.to( target, rd(3000, 5000))
+					.easing(TWEEN.Easing.Elastic.InOut) //https://www.createjs.com/docs/tweenjs/classes/Ease.html
+					.onUpdate(function() {
+						this.elem.scale.x = this.x;
+						this.elem.scale.y = this.y;
+						this.elem.scale.z = this.z;
+						this.elem.rotation.x = this.rx;
+						this.elem.rotation.y = this.ry;
+						this.elem.rotation.z = this.rz;
+					})
+					.onComplete(function() {
+						this.elem.animate = false;
+	
+						setAnimation(this.elem);
+						
+					}).start();
+				
+					el.animate=true;
+				}
+			}
+			
+			function setAnimation2(el){
+			
+				if(el.animate==false || el.animate == undefined ){
+					
+					el.sX = el.scale.x;
+					el.sY = el.scale.y;
+					el.sZ = el.scale.z;
+					el.rX = el.rotation.x;
+					el.rY = el.rotation.y;
+					el.rZ = el.rotation.z;
+					//el.cb = cb;
+					var current = { x: el.sX, y: el.sY, z: el.sZ, rx: el.rX, ry: el.rY, rz: el.rZ, elem: el}; 
+					if (gl_TIME<10000){
+						var target = { x: rdf(0.01, 3), y: rdf(0.01, 3), z: rdf(0.01, 3), 
+							rx: THREE.MathUtils.degToRad(rd(0, 360)),
+							ry: THREE.MathUtils.degToRad(rd(0, 360)),
+							rz: THREE.MathUtils.degToRad(rd(0, 360))
+						};
+						//console.log(target);
+					}else{
+						var target = el.end; //sphere.end
+						klaar  = true;
+					}
+					
+					var tween = new TWEEN.Tween(current)
+					.to( target, rd(1000, 3000))
+					.easing(TWEEN.Easing.Elastic.InOut) //https://www.createjs.com/docs/tweenjs/classes/Ease.html
+					.onUpdate(function() {
+						this.elem.scale.x = this.x;
+						this.elem.scale.y = this.y;
+						this.elem.scale.z = this.z;
+						this.elem.rotation.x = this.rx;
+						this.elem.rotation.y = this.ry;
+						this.elem.rotation.z = this.rz;
+					})
+					.onComplete(function() {
+						this.elem.animate = false;
+						callback2();
+						setAnimation(this.elem);
+						
+					}).start();
+				
+					el.animate=true;
+				}
+			}
+		</script>
+
+	</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - materials - cubemap mipmaps</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="main.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
+		<script >
+		var gl_TIME = 0;
+		</script>
+	</head>
+	<body>
+
+		<div id="container"></div>
+		
+
+		<!-- Import maps polyfill -->
+		<!-- Remove this when import maps will be widely supported -->
+		<script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "https://unpkg.com/three@0.126.1/build/three.module.js"
+				}
+			}
+		</script>
+
+		<script type="module">
+
+			import * as THREE from 'three';
+
+			import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
+
+			let container;
+
+			let camera, scene, renderer;
+
+			init();
+			animate();
+
+			//load customized cube texture
+			async function loadCubeTextureWithMipmaps() {
+
+				const path = 'https://welgeen.nl/threejs/examples/textures/cube/angus/';
+				const format = '.jpg';
+				const mipmaps = [];
+				const maxLevel = 8;
+
+				async function loadCubeTexture( urls ) {
+
+					return new Promise( function ( resolve ) {
+
+						new THREE.CubeTextureLoader().load( urls, function ( cubeTexture ) {
+
+							resolve( cubeTexture );
+
+						} );
+
+
+					} );
+
+				}
+
+				// load mipmaps
+				const pendings = [];
+
+				for ( let level = 0; level <= maxLevel; ++ level ) {
+
+					const urls = [];
+
+					for ( let face = 0; face < 6; ++ face ) {
+
+						urls.push( path + 'cube_m0' + level + '_c0' + face + format );
+
+					}
+
+					const mipmapLevel = level;
+
+					pendings.push( loadCubeTexture( urls ).then( function ( cubeTexture ) {
+
+						mipmaps[ mipmapLevel ] = cubeTexture;
+
+					} ) );
+
+				}
+
+				await Promise.all( pendings );
+
+				const customizedCubeTexture = mipmaps.shift();
+				customizedCubeTexture.mipmaps = mipmaps;
+				customizedCubeTexture.minFilter = THREE.LinearMipMapLinearFilter;
+				customizedCubeTexture.magFilter = THREE.LinearFilter;
+				customizedCubeTexture.generateMipmaps = false;
+				customizedCubeTexture.needsUpdate = true;
+
+				return customizedCubeTexture;
+
+			}
+
+			function init() {
+
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 10000 );
+				camera.position.z = 5;
+
+				scene = new THREE.Scene();
+
+				loadCubeTextureWithMipmaps().then( function ( cubeTexture ) {
+
+				var sphere = new THREE.SphereGeometry( 0.5, 64, 64 );
+				for(var x=0; x<10; x++){
+					
+				//manual mipmaps
+					let material = new THREE.MeshBasicMaterial( { color: 0xffffff, envMap: cubeTexture } );
+					material.name = 'manual mipmaps';
+
+					let mesh = new THREE.Mesh( sphere, material );
+					mesh.position.set( 0, 0, 0 );
+
+					mesh.position.y =  1;
+					mesh.rotation.y =  THREE.MathUtils.degToRad(rd(0, 360));
+					mesh.rotation.x =  THREE.MathUtils.degToRad(rd(0, 360));
+					mesh.rotation.z =  THREE.MathUtils.degToRad(rd(0, 360));
+					//console.log(rdf(0.01, 1))
+					mesh.begin = { x: rdf(0.03, 0.2), y: rdf(0.03, 0.3), z: rdf(0.03, 0.3), 
+							rx: THREE.MathUtils.degToRad(rd(0, 360)),
+							ry: THREE.MathUtils.degToRad(rd(0, 360)),
+							rz: THREE.MathUtils.degToRad(rd(0, 360))
+						}
+					mesh.scale.set(mesh.begin.x, mesh.begin.y, mesh.begin.z );
+					scene.add(mesh);
+			
+					setAnimation(mesh);
+				}
+
+
+				} );
+
+				//renderer
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+
+				//controls
+				const controls = new OrbitControls( camera, renderer.domElement );
+				controls.minPolarAngle = Math.PI / 4;
+				controls.maxPolarAngle = Math.PI / 1.5;
+
+				window.addEventListener( 'resize', onWindowResize );
+
+			}
+			function rd(min, max) { // min and max included 
+			  return Math.floor(Math.random() * (max - min + 1) + min)
+			}
+			function rdf(min, max) { // min and max included 
+			  return Math.random() * (max - min + 1) + min
+			}
+			function rdc() { // min and max included 
+			  return ("#" +Math.floor(Math.random()*16777215).toString(16));
+			}
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function animate(time) {
+				TWEEN.update(time);
+				gl_TIME = time;
+				requestAnimationFrame( animate );
+				renderer.render( scene, camera );
+
+			}
+			
+			function setAnimation(el){
+			
+				if(el.animate==false || el.animate == undefined ){
+					
+					el.sX = el.scale.x;
+					el.sY = el.scale.y;
+					el.sZ = el.scale.z;
+					el.rX = el.rotation.x;
+					el.rY = el.rotation.y;
+					el.rZ = el.rotation.z;
+					
+					var current = { x: el.sX, y: el.sY, z: el.sZ, rx: el.rX, ry: el.rY, rz: el.rZ, elem: el}; 
+					
+					var target = { x: rdf(0.01, 3), y: rdf(0.03, 3), z: rdf(0.03, 3), 
+							rx: THREE.MathUtils.degToRad(rd(0, 360)),
+							ry: THREE.MathUtils.degToRad(rd(0, 360)),
+							rz: THREE.MathUtils.degToRad(rd(0, 360))
+						}
+				
+					var tween = new TWEEN.Tween(current)
+					.to( target, rd(1000, 30000))
+					.easing(TWEEN.Easing.Elastic.InOut) //https://www.createjs.com/docs/tweenjs/classes/Ease.html
+					.onUpdate(function() {
+						this.elem.scale.x = this.x;
+						this.elem.scale.y = this.y;
+						this.elem.scale.z = this.z;
+						this.elem.rotation.x = this.rx;
+						this.elem.rotation.y = this.ry;
+						this.elem.rotation.z = this.rz;
+					})
+					.onComplete(function() {
+						this.elem.animate = false;
+						setAnimation(this.elem)
+					}).start();
+				
+					el.animate=true;
+				}
+			}
+		</script>
+
+	</body>
+</html>
